@@ -51,4 +51,15 @@ public class Brain {
         }
         return Translator.translate(0, 0, favouredDirections.get(chosenIndex));
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Brain) {
+            Brain otherBrain = (Brain) o;
+            DecisionNeuron decisionNeuron1 = decisionNeurons.get(0);
+            DecisionNeuron decisionNeuron2 = otherBrain.getDecisionNeurons().get(0);
+            return decisionNeuron1.equals(decisionNeuron2);
+        }
+        return false;
+    }
 }

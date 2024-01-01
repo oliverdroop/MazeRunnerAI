@@ -17,8 +17,8 @@ public class MazeRunner {
 
     public static void main(String[] args) {
         final BufferedImage image = loadImage();
-        final int maxCycles = 8;
-        final int brainCountPerCycle = Short.MAX_VALUE;
+        final int maxCycles = 256;
+        final int brainCountPerCycle = 256;
         final List<Brain> brains = new ArrayList<>();
         for (int brainNumber = 0; brainNumber < brainCountPerCycle; brainNumber++) {
             Position position = new Position(1, 1);
@@ -62,8 +62,23 @@ public class MazeRunner {
 
         Brain bestBrain = sortedBrains.get(0);
 
-        // Replace each brain in the list by breeding it with the best brain
-        brains.replaceAll(brain -> BrainFactory.breedBrains(image, new Position(1, 1), bestBrain, brain));
+        if (rewardMap.get(bestBrain) > Short.MAX_VALUE) {
+            LOGGER.info("The best brain escaped");
+            bestBrain.getDecisionNeurons()
+                    .forEach(decisionNeuron -> decisionNeuron.getWeighting()
+                            .forEach(weighting -> LOGGER.debug("Weighting: {}", weighting)));
+            bestBrain.getHistory().forEach(position -> LOGGER.info("[{}, {}]", position.getX(), position.getY()));
+        }
+
+        // Replace each brain in the list by breeding the best brain with a random brain
+        brains.replaceAll(brain -> {
+            Position position = new Position(1, 1);
+            // Keep the best brain
+            if (brain.equals(bestBrain)) {
+                return BrainFactory.breedBrains(image, position, bestBrain, brain);
+            }
+            return BrainFactory.breedBrains(image, position, bestBrain, BrainFactory.createRandomBrain(image, position));
+        });
     }
 
     private static BufferedImage loadImage() {

@@ -31,11 +31,6 @@ public class MovementHandler {
             } else if (liveness == -1) {
                 // Give a big reward for escaping the maze
                 rewardValue = Integer.MAX_VALUE - rewardValue;
-                LOGGER.info("A brain escaped the maze");
-                brain.getDecisionNeurons()
-                        .forEach(decisionNeuron -> decisionNeuron.getWeighting()
-                                .forEach(weighting -> LOGGER.info("Weighting: {}", weighting)));
-                brain.getHistory().forEach(position -> LOGGER.info("[{}, {}]", position.getX(), position.getY()));
             }
         }
         return rewardValue;
